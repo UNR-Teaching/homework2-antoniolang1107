@@ -1,21 +1,43 @@
-#include "linkedstack.h"
-
 template<class ItemType>
-bool LinkedStack::isEmpty() const {
-
+LinkedStack<ItemType>::LinkedStack() {
+    topPtr = nullptr;
 }
 
 template<class ItemType>
-bool LinkedStack::push(const ItemType& newEntry) {
-
+bool LinkedStack<ItemType>::isEmpty() const {
+    if (topPtr == nullptr || topPtr == 0x0)
+        return true;
+    else
+        return false;
 }
 
 template<class ItemType>
-bool LinkedStack::pop() {
-
+bool LinkedStack<ItemType>::push(const ItemType& newEntry) {
+    Node<ItemType>* newNode = new Node<ItemType>(newEntry);
+    newNode->setNext(topPtr);
+    topPtr = newNode;
+    return true;
 }
 
 template<class ItemType>
-ItemType LinkedStack::peek() const {
+bool LinkedStack<ItemType>::pop() {
+    if (isEmpty()) {
+        return false;
+    }
+    else {
+        Node<ItemType>* nodeToDelete = topPtr;
+        topPtr = topPtr->getNext();
+        delete nodeToDelete;
+        return true;
+    }
+}
 
+template<class ItemType>
+ItemType LinkedStack<ItemType>::peek() const {
+    if (topPtr == nullptr) {
+        return NULL;
+    }
+    else {
+        return topPtr->getItem();
+    }
 }

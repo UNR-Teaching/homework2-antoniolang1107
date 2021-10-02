@@ -1,7 +1,7 @@
 postfix: postfix.o
-	g++ postifx.o -o postfix
+	g++ postfix.o -o postfix
 
-postfix.o postfix.cpp linkedstack.h node.h
+postfix.o: postfix.cpp linkedstack.h node.h
 	g++ -c -std=c++11 postfix.cpp
 
 clean:

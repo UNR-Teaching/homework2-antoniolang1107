@@ -1,31 +1,109 @@
 #include <iostream>
+#include <string>
+#include "linkedstack.h"
+#include "node.h"
+
+string getInfix();
+string toPostfix(string);
+int calcPostfix(string);
+int getResult(char, int, int);
+bool isInt(char);
+bool isOperator(char);
+bool highOperator(char);
 
 int main() {
+    string expression;
+    expression = getInfix();
+    std::cout << "Result: " << calcPostfix(toPostfix(expression)) << std::endl;
+} // ends main
 
-}
+string getInfix() {
+    string expression;
+    std::cout << "Enter your expression: ";
+    std::getline(std::cin, expression);
+    return expression;
+} // ends getInfix
 
+string toPostfix(string infix) {
+    LinkedStack<char> readInfix;
+    string postfix;
 
-/*
-take string of characters (infix expression) and translate it into precendence order (postfix expression)
-    make function to do
+    for (int i = 0; i < infix.length(); i++) {
+        if (isInt(infix[i]))
+            postfix += infix[i];
+        else if (isOperator(infix[i])) {
+            if (!readInfix.isEmpty()) {
+                if (!highOperator(infix[i])) {
+                    postfix += readInfix.peek();
+                    readInfix.pop();
+                    readInfix.push(infix[i]);
+                }
+                else
+                    readInfix.push(infix[i]);
+            }
+            else
+                readInfix.push(infix[i]);
+            
+        }
+    }
+    while(!readInfix.isEmpty()) {
+        postfix += readInfix.peek();
+        readInfix.pop();
+    }
 
-transform logic:
-    if char is (, push to stack
-    if char is ), pop until ( is reached
-    if is number, add to output string
-    while peeking at top, take into account precendence of operators
-        exception for nothing to peek at (?)
-        pop higher precendence operator before adding lower one to the stack (iterate through comparisons?)
-    when infix expression is empty, pop all values into the postfix expression
+    return postfix;
+} // ends toPostfix
 
-caluclation logic:
-    take string input, get number output (integer division is fine for assignment)
-    new stack for operands (aka the numbers) (type-cast to int/float for the stack)
-    when operator reached, pop operands off stacks
-    push result back on stack
-    *peek before popping with stack
+int calcPostfix(string postfix) {
+    LinkedStack<int> calcPostfix;
+    int num1, num2;
+    char operand;
 
-other functions
-    check for operation vs operand
-    convert char to int/float
-*/
+    for (int i = 0; i < postfix.length(); i++) {
+        if (isOperator(postfix[i])) {
+            operand = postfix[i];
+            num2 = (int)calcPostfix.peek();
+            calcPostfix.pop();
+            num1 = (int)calcPostfix.peek();
+            calcPostfix.pop();
+
+            calcPostfix.push(getResult(operand, num1, num2));
+        }
+        else
+            calcPostfix.push(postfix[i] - '0');
+    }
+
+    return calcPostfix.peek();
+} // ends calcPostfix
+
+bool isInt(char input) {
+    if (input >= '0' && input <= '9')
+        return true;
+    else
+        return false;
+} // ends isInt
+
+bool isOperator(char input) {
+    if (input == '*' || input == '/' || input == '+' || input == '-')
+        return true;
+    else
+        return false;
+} // ends isOperator
+
+int getResult(char operand, int num1, int num2) {
+    if (operand == '*')
+        return num1*num2;
+    if (operand == '/')
+        return num1/num2;
+    if (operand == '+')
+        return num1+num2;
+    if (operand == '-')
+        return num2-num1;
+} // ends getResult
+
+bool highOperator(char op1) {
+    if (op1 == '*' || op1 == '/')
+        return true;
+    else
+        return false;
+} // ends highOperator
